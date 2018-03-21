@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Threading;
 using NewRelic.Platform.Sdk.Utils;
 
@@ -89,8 +90,11 @@ namespace NewRelic.Microsoft.SqlServer.Plugin.Core
 
             _threadState.Start();
 
+            var timing = new Stopwatch();
             while (_threadState.IsRunning)
             {
+                timing.Reset();
+                timing.Start();
                 if (!_threadState.IsPaused(true))
                 {
                     try
@@ -117,14 +121,17 @@ namespace NewRelic.Microsoft.SqlServer.Plugin.Core
                 {
                     _log.Debug("{0}: Paused - skipping pass", ThreadSettings.Name);
                 }
-
-                var interval = TimeSpan.FromSeconds(ThreadSettings.PollIntervalSeconds);
-
+                timing.Stop();
+                var interval = TimeSpan.FromSeconds(ThreadSettings.PollIntervalSeconds).Subtract(TimeSpan.FromMilliseconds(timing.ElapsedMilliseconds));
+                
                 _log.Debug("{0}: Sleeping for {1}", ThreadSettings.Name, interval);
-
-                if (ThreadSettings.AutoResetEvent.WaitOne(interval, true))
+                if (interval.Milliseconds > 0)
                 {
-                    _log.Debug("{0}: Interrupted - woken up early", ThreadSettings.Name);
+
+                    if (ThreadSettings.AutoResetEvent.WaitOne(interval, true))
+                    {
+                        _log.Debug("{0}: Interrupted - woken up early", ThreadSettings.Name);
+                    }
                 }
             }
 

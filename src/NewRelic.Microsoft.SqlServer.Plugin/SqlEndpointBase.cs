@@ -91,7 +91,7 @@ namespace NewRelic.Microsoft.SqlServer.Plugin
             _log.Info("Connecting with {0}", safeConnectionString);
 
             using (var conn = new SqlConnection(connectionString))
-            {
+           {                
                 foreach (SqlQuery query in queries)
                 {
                     object[] results;

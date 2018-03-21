@@ -839,7 +839,8 @@ this IDbConnection cnn, string sql, dynamic param = null, IDbTransaction transac
             bool wasClosed = cnn.State == ConnectionState.Closed;
             try
             {
-                cmd = SetupCommand(cnn, transaction, sql, info.ParamReader, param, commandTimeout, commandType);
+                //Have hard coded 60 seconds as connectionTimeout
+                cmd = SetupCommand(cnn, transaction, sql, info.ParamReader, param, 60 , commandType);
 
                 if (wasClosed) cnn.Open();
                 reader = cmd.ExecuteReader(wasClosed ? CommandBehavior.CloseConnection : CommandBehavior.Default);

@@ -12,10 +12,18 @@ SELECT
 	FROM sys.dm_os_performance_counters
 	WHERE counter_name = 'Buffer cache hit ratio base')
 	AS BufferCacheHitRatio,
+	
 	(SELECT
 		cntr_value
 	FROM sys.dm_os_performance_counters
 	WHERE counter_name = 'Page life expectancy'
 	-- The OBJECT_NAME is fixed width with many trailing spaces
 	AND RTRIM([object_name]) LIKE '%:Buffer Manager')
-	AS PageLife
+	AS PageLife,
+
+	(((SELECT CAST(cntr_value as decimal(19,5))
+	FROM sys.dm_os_performance_counters
+	WHERE counter_name = 'Database Cache Memory (KB)                                                                                                      '
+	-- The OBJECT_NAME is fixed width with many trailing spaces
+	AND RTRIM([object_name]) = 'SQLServer:Memory Manager')/1024/1024/4)*300)
+	AS PageLifeLimit

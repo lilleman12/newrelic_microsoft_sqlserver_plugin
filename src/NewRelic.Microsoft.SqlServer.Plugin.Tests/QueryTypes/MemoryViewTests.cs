@@ -35,10 +35,11 @@ namespace NewRelic.Microsoft.SqlServer.Plugin.QueryTypes
 		public void Assert_page_threat_stays_between_0_and_100()
 		{
 			var memoryView = new MemoryView {PageLife = 0};
-			Assert.That(memoryView.PageLifeThreat, Is.EqualTo(100m), "0 page life maxes at 100%");
+            memoryView.PageLifeLimit = 300;
+            Assert.That(memoryView.PageLifeThreat, Is.EqualTo(100m), "0 page life maxes at 100%");
 
 			// Try just above 0
-			memoryView.PageLife = 1; 
+			memoryView.PageLife = 1;            
 			Assert.That(memoryView.PageLifeThreat, Is.EqualTo(100m), "1 page life maxes at 100%");
 
 			// Try the default
@@ -52,6 +53,11 @@ namespace NewRelic.Microsoft.SqlServer.Plugin.QueryTypes
 			// Just above the default
 			memoryView.PageLife = long.MaxValue; 
 			Assert.That(memoryView.PageLifeThreat, Is.EqualTo(0m), "Max page life should effectively report 0%");
-		}
+
+            memoryView.PageLife = 5254;
+            memoryView.PageLifeLimit = 7063;
+            Assert.That(memoryView.PageLifeThreat, !Is.EqualTo(100m), "Should be over 100%");
+
+        }
 	}
 }

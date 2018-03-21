@@ -25,7 +25,7 @@ namespace NewRelic.Microsoft.SqlServer.Plugin
 		public SqlQuery(Type queryType, QueryAttribute attribute, IDapperWrapper dapperWrapper, string commandText = null)
 			: base(queryType, attribute.QueryName, queryType.Name)
 		{
-			_dapperWrapper = dapperWrapper;
+			_dapperWrapper = dapperWrapper;            
 			QueryAttribute = attribute;
 
 			if (attribute.MetricPattern != null)

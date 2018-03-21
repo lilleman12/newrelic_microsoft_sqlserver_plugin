@@ -20,6 +20,24 @@ namespace NewRelic.Microsoft.SqlServer.Plugin.QueryTypes
         [Metric(MetricValueType = MetricValueType.Value, Units = "bytes", MetricTransform = MetricTransformEnum.Delta)]
         public long SizeInBytes { get; set; }
 
+        [Metric(MetricValueType = MetricValueType.Value, Units = "ms", MetricTransform = MetricTransformEnum.Delta)]
+        public long IoStallReadMs { get; set; }
+
+        [Metric(MetricValueType = MetricValueType.Value, Units = "ms", MetricTransform = MetricTransformEnum.Delta)]
+        public long IoStallWriteMs { get; set; }
+
+        [Metric(MetricValueType = MetricValueType.Value, Units = "ms", MetricTransform = MetricTransformEnum.Delta)]
+        public long IoStall { get; set; }
+
+        [Metric(MetricValueType = MetricValueType.Value, Units = "ms")]
+        public long ReadLatency { get; set; }
+
+        [Metric(MetricValueType = MetricValueType.Value, Units = "ms")]
+        public long WriteLatency { get; set; }
+
+        [Metric(MetricValueType = MetricValueType.Value, Units = "ms")]
+        public long Latency { get; set; }
+
         protected override string DbNameForWhereClause
         {
             get { return "d.name"; }
@@ -37,8 +55,14 @@ namespace NewRelic.Microsoft.SqlServer.Plugin.QueryTypes
                                  "BytesWritten: {2},\t" +
                                  "NumberOfReads: {3},\t" +
                                  "NumberOfWrites: {4},\t" +
-                                 "SizeInBytes: {5}",
-                                 DatabaseName, BytesRead, BytesWritten, NumberOfReads, NumberOfWrites, SizeInBytes);
+                                 "SizeInBytes: {5},\t" +
+                                 "IoStallReadMs: {6},\t" +
+                                 "IoStallWriteMs: {7},\t" +
+                                 "IoStall: {8},\t" +
+                                 "ReadLatency: {9},\t" +
+                                 "WriteLatency: {10},\t" +
+                                 "Latency: {11},\t"                                  
+                                 , DatabaseName, BytesRead, BytesWritten, NumberOfReads, NumberOfWrites, SizeInBytes, IoStallReadMs, IoStallWriteMs, IoStall, ReadLatency, WriteLatency, Latency);
         }
     }
 }

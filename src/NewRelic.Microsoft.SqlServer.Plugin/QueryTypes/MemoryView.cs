@@ -24,6 +24,10 @@ namespace NewRelic.Microsoft.SqlServer.Plugin.QueryTypes
         [Metric(MetricValueType = MetricValueType.Value, Units = "sec")]
         public long PageLife { get; set; }
 
+        //Based on 4Gb change in 5 mins
+        [Metric(MetricValueType = MetricValueType.Value, Units = "sec")]
+        public long PageLifeLimit { get; set; }
+
         /// <summary>
         /// <see cref="PageLife"/> is an important metric, however, it is an even increasing metric.
         /// Such metrics, where higher is better, are not supported as Summary metrics in the New Relic dashboard.
@@ -37,13 +41,10 @@ namespace NewRelic.Microsoft.SqlServer.Plugin.QueryTypes
             {
                 // Defend against bad page life
                 if (PageLife <= 0) return 100m;
-                // Minimum is 5 mins
-                const decimal minimumPageLifeInSeconds = 300;
                 // Get a "threat" value that maxes out at 1
-                var threat = Math.Min(1m, minimumPageLifeInSeconds/PageLife);
-                // Minimize decimal length
-                // Square it to minimize the threat at values far away from 300
-                var result = threat*threat
+                var threat = Convert.ToDecimal(PageLifeLimit)/Convert.ToDecimal(PageLife);
+                // Minimize decimal length                
+                var result = threat
                        // Multiply for percentage
                        *100;
                 // Reduce number of digits
